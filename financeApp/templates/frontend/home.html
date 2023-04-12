@@ -1,0 +1,30 @@
+{% extends '../base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+
+{% block content %}
+    <div class="main">
+        <div class="uk-container">
+                {% if messages %}
+                <div id="alert" style="width: 50%; margin: 0 auto;">
+                    <div class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p style="color: #f0506e;">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            <h1>Финансовое состояние организации</h1>
+            <p>Оценка стоимости чистых активов организации. Анализ финансовой устойчивости по величине излишка (недостатка) собственных оборотных средств. Все расчеты в онлайн режиме.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'companyList' %}" class="uk-button uk-button-primary">Отчеты</a>
+            {% else %}
+            <a href="{% url 'loginPage' %}" class="uk-button uk-button-primary">Вход</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

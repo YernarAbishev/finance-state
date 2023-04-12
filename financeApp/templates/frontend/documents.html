@@ -1,0 +1,27 @@
+{% extends '../base.html' %}
+
+{% block title %}Отчеты{% endblock %}
+
+
+{% block content %}
+    <div class="block">
+        <div class="uk-container">
+            <h1>Система</h1>
+            <div class="uk-column-1-2 uk-column-divider">
+                <div>
+                    <div class="uk-card uk-card-primary uk-card-body">
+                        <h3 class="uk-card-title">Компании</h3>
+                        <a class="uk-button uk-button-default" href="{% url 'companyList' %}">Список</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="uk-card uk-card-primary uk-card-body">
+                        <h3 class="uk-card-title">Балансовый отчет</h3>
+                        <a class="uk-button uk-button-default" href="{% url 'addBalanceSheet' %}">Добавить</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

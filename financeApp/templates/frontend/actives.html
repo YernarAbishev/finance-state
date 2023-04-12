@@ -1,0 +1,221 @@
+{% extends '../base.html' %}
+
+{% block title %}Активы{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="block">
+        <div class="uk-container">
+            <h1>Активы компании {{ company.companyName }}</h1>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Оборотные активы</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Прочие активы</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Общие активы</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Основные средства</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+            <h2>Сведения активов</h2>
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+                {% for asset in assets %}
+                <li><a href="#">{{ asset.year }}</a></li>
+                {% endfor %}
+            </ul>
+            <ul class="uk-switcher uk-margin">
+                {% for asset in assets %}
+                <li>
+                    <div class="uk-card uk-card-primary uk-card-body">
+                        <h3 class="uk-card-title">Текущие активы</h3>
+                        <h3 class="uk-card-title">{{ asset.activeName }}</h3>
+                        <p>Год: {{ asset.year }}</p>
+                        <p>Наличные: {{ asset.cash }} &#8376;</p>
+                        <p>Дебиторская задолженность: {{ asset.accountsReceivable }} &#8376;</p>
+                        <p>Инвентаризация: {{ asset.inventory }} &#8376;</p>
+                        <p>Предоплаченные расходы: {{ asset.prepaidExpenses }} &#8376;</p>
+                        <p>Краткосрочные инвестиции: {{ asset.shortTermInvestments }} &#8376;</p>
+                        <p>Итого (оборотные активы): <b>{{ asset.getTotalCurrentAssets }} &#8376;</b></p>
+                        <hr>
+                        <h3 class="uk-card-title">Основные (долгосрочные) активы</h3>
+                        <p>Долгосрочные инвестиции: {{ asset.longTermInvestments }} &#8376;</p>
+                        <p>Основные средства: {{ asset.propertyPlantEquipement }} &#8376;</p>
+                        <p>(За вычетом накопленной амортизации): {{ asset.lessAccumulatedDepreciation }} &#8376;</p>
+                        <p>Нематериальные активы: {{ asset.intangibleAssets }} &#8376;</p>
+                        <p>Итого (Основные средства): <b>{{ asset.getTotalCurrentAssets }} &#8376;</b></p>
+                        <hr>
+                        <h3 class="uk-card-title">Прочие активы</h3>
+                        <p>Отложенный налог на прибыль: {{ asset.getTotalCurrentAssets }} &#8376;</p>
+                        <p>Разное: {{ asset.getTotalCurrentAssets }}</p>
+                        <p>Итого (Прочие активы): <b>{{ asset.getTotalCurrentAssets }} &#8376;</b></p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+      const ch1 = document.getElementById('chart1').getContext('2d');
+      const ch2 = document.getElementById('chart2').getContext('2d');
+      const ch3 = document.getElementById('chart3').getContext('2d');
+      const ch4 = document.getElementById('chart4').getContext('2d');
+      const chart1 = new Chart(ch1, {
+          type: 'doughnut',
+          data: {
+            labels : [{% for label in assets %}"Оборотные активы за {{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Оборотные активы",
+                data : [{% for data in assets %}{{ data.getTotalCurrentAssets }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(54, 162, 235)',
+                  'rgb(255, 205, 86)'
+                ],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart2 = new Chart(ch2, {
+          type: 'bar',
+          data: {
+            labels : [{% for label in assets %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Разное",
+                data : [{% for data in assets %}{{ data.getTotalOtherAssets }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart3 = new Chart(ch3, {
+          type: 'radar',
+          data: {
+            labels : [{% for label in assets %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Общие активы",
+                data : [{% for data in assets %}{{ data.getTotalAssets }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart4 = new Chart(ch4, {
+          type: 'line',
+          data: {
+            labels : [{% for label in assets %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Основные средства",
+                data : [{% for data in assets %}{{ data.getTotalLongTermAssets }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+
+
+    </script>
+
+{% endblock %}

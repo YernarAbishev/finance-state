@@ -1,0 +1,21 @@
+.main {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../img/main.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 80vh;
+    display: flex;
+    align-items:center;    
+}
+.main h1 {
+    color: #fff;
+}
+.main p {
+    width: 70%;
+    text-align: justify;
+    color: #fff;
+    margin-bottom: 30px;
+}
+.block {
+    padding: 40px 0;
+}

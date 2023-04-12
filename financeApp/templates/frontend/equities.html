@@ -1,0 +1,221 @@
+{% extends '../base.html' %}
+
+{% block title %}Обязательства и собственный капитал владельца{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="block">
+        <div class="uk-container">
+            <h1>Обязательства и собственный капитал владельца компании {{ company.companyName }}</h1>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Текущие обязательства</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Долгосрочные обязательства</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Cобственный капитал владельца</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Совокупные обязательства и собственный капитал владельца</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <h2>Сведения активов</h2>
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+                {% for equaity in equaties %}
+                <li><a href="#">{{ equaity.year }}</a></li>
+                {% endfor %}
+            </ul>
+            <ul class="uk-switcher uk-margin">
+            {% for equaity in equaties %}
+                <li>
+                    <div class="uk-card uk-card-primary uk-card-body">
+                        <h3 class="uk-card-title">Текущие обязательства</h3>
+                        <p>Год: {{ equaity.year }}</p>
+                        <p>Кредиторская задолженность: {{ equaity.accountsPayable }} &#8376;</p>
+                        <p>Краткосрочные кредиты: {{ equaity.shortTermLoans }} &#8376;</p>
+                        <p>Подлежащий уплате подоходный налог: {{ equaity.incomeTaxes }} &#8376;</p>
+                        <p>Начисленная заработная плата: {{ equaity.accruedSalaries }} &#8376;</p>
+                        <p>Незаработанный доход: {{ equaity.unearnedRevenue }} &#8376;</p>
+                        <p>Текущая часть долгосрочного долга: {{ equaity.currentPortion }} &#8376;</p>
+                        <p>Итого (Текущие обязательства): <b>{{ equaity.getTotalCurrentLiabilities }} &#8376;</b></p>
+                        <hr>
+                        <h3 class="uk-card-title">Долгосрочные обязательства</h3>
+                        <p>Долгосрочный долг: {{ equaity.longTermDebt }} &#8376;</p>
+                        <p>Отложенный налог на прибыль: {{ equaity.defferedIncomeTax }} &#8376;</p>
+                        <p>Разное: {{ equaity.otherLongTerm }} &#8376;</p>
+                        <p>Итого (Долгосрочные обязательства): <b>{{ equaity.getTotalLongTermLiabilities }} &#8376;</b></p>
+                        <hr>
+                        <h3 class="uk-card-title">Собственный капитал владельца</h3>
+                        <p>Инвестиции владельца: {{ equaity.ownerInvestment }} &#8376;</p>
+                        <p>Нераспределенная прибыль: {{ equaity.retainedEarnings }} &#8376;</p>
+                        <p>Разное: {{ equaity.otherOwnerInvestment }} &#8376;</p>
+                        <p>Итого (Собственный капитал владельца): <b>{{ equaity.getTotalOwnerEquaity }} &#8376;</b></p>
+                        <h3 class="uk-card-title">Совокупные обязательства и собственный капитал владельца: {{ equaity.getTotalLiabilitiesAndOwnerEquity }} &#8376;</h3>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+      const ch1 = document.getElementById('chart1').getContext('2d');
+      const ch2 = document.getElementById('chart2').getContext('2d');
+      const ch3 = document.getElementById('chart3').getContext('2d');
+      const ch4 = document.getElementById('chart4').getContext('2d');
+      const chart1 = new Chart(ch1, {
+          type: 'pie',
+          data: {
+            labels : [{% for label in equaties %}"Оборотные активы за {{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Оборотные активы",
+                data : [{% for data in equaties %}{{ data.getTotalCurrentLiabilities }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(54, 162, 235)',
+                  'rgb(255, 205, 86)'
+                ],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart2 = new Chart(ch2, {
+          type: 'bar',
+          data: {
+            labels : [{% for label in equaties %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Разное",
+                data : [{% for data in equaties %}{{ data.getTotalLongTermLiabilities }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart3 = new Chart(ch3, {
+          type: 'radar',
+          data: {
+            labels : [{% for label in equaties %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Общие активы",
+                data : [{% for data in equaties %}{{ data.getTotalOwnerEquaity }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart4 = new Chart(ch4, {
+          type: 'polarArea',
+          data: {
+            labels : [{% for label in equaties %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Основные средства",
+                data : [{% for data in equaties %}{{ data.getTotalLiabilitiesAndOwnerEquity }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(75, 192, 192)',
+                  'rgb(255, 205, 86)',
+                  'rgb(201, 203, 207)',
+                  'rgb(54, 162, 235)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Вход в систему{% endblock %}
+
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <div class="block">
+        <div class="uk-container">
+            <div class="uk-card uk-card-default uk-card-body mb-5">
+              <h1>Вход в систему</h1>
+              <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button class="uk-button uk-button-primary">Войти</button>
+              </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static './css/uikit.min.css' %}">
+    <link rel="stylesheet" href="{% static './css/style.css' %}">
+    <script src="{% static './js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static './js/uikit.min.js' %}"></script>
+    <script src="{% static './js/uikit-icons.min.js' %}"></script>
+    <script src="{% static './js/Chart.min.js' %}"></script>
+</head>
+<body>
+    <header class="uk-navbar-container">
+        <div class="uk-container">
+            <div uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo" href="#" aria-label="Back to Home">Finanical State App</a>
+                </div>
+                <div class="uk-navbar-right">
+
+                    <ul class="uk-navbar-nav">
+                        <li><a href="{% url 'homePage' %}">Главная</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'documentPage' %}">Отчеты</a></li>
+                        <li><a href="{% url 'addCompanyPage' %}">Добавить компанию</a></li>
+                        <li><a href="{% url 'addBalanceSheet' %}">Добавить отчет</a></li>
+                        <li>
+                            <a href="#">@{{ user.username }}</a>
+                            <div class="uk-navbar-dropdown">
+                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                    <li><a href="/admin/financeApp/">Админ панель</a></li>
+                                    <li class="uk-nav-divider"></li>
+                                    <li><a href="{% url 'logoutUser' %}">Выход</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li><a href="{% url 'loginPage' %}">Войти в систему</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    {% block content %}
+    {% endblock %}
+
+
+    <footer>
+        <div class="uk-card uk-card-secondary uk-card-body">
+            <div class="uk-container">
+                <h3 class="uk-card-title">Finanical State App</h3>
+                <p>&copy;2023</p>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+</html>

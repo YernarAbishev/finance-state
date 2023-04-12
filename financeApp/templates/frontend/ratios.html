@@ -1,0 +1,250 @@
+{% extends '../base.html' %}
+
+{% block title %}Общие финансовые коэффициенты{% endblock %}
+
+
+{% block content %}
+
+
+    <div class="block">
+        <div class="uk-container">
+            <h1>Общие финансовые коэффициенты компании {{ company.companyName }}</h1>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Соотношение долга</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Коэффициент текущей ликвидности</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="uk-column-1-2 uk-column-divider mb-5">
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Оборотный капитал</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Отношение активов к собственному капиталу</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <hr>
+                <div class="uk-card uk-card-default uk-card-body mb-5">
+                    <h3>Отношение активов к собственному капиталу</h3>
+                    <div style="margin-bottom: 30px;">
+                        <canvas id="chart5"></canvas>
+                    </div>
+                </div>
+
+
+
+
+            <h2>Сведения активов</h2>
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+                {% for ratio in ratios %}
+                <li><a href="#">{{ ratio.year }}</a></li>
+                {% endfor %}
+            </ul>
+            <ul class="uk-switcher uk-margin">
+                {% for ratio in ratios %}
+                <li>
+                    <div class="uk-card uk-card-primary uk-card-body">
+                        <h3 class="uk-card-title">Текущие коэффициенты</h3>
+                        <p>Год: {{ ratio.year }}</p>
+                        <p>Соотношение долга (Совокупные обязательства / совокупные активы): {{ ratio.getDebtRatio }} </p>
+                        <p>Коэффициент текущей ликвидности (Текущие активы / Текущие обязательства): {{ ratio.getCurrentRatio }} </p>
+                        <p>Оборотный капитал (Текущие активы - Текущие обязательства): {{ ratio.getWorkingCapital }} </p>
+                        <p>Отношение активов к собственному капиталу (Общие активы / Собственный капитал владельца): {{ ratio.getAssetsToEquaityRatio }} </p>
+                        <p>Отношение долга к собственному капиталу (Совокупные обязательства / Собственный капитал владельца) (оборотные активы): {{ ratio.getDebtToEquaityRatio }}</p>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+      const ch1 = document.getElementById('chart1').getContext('2d');
+      const ch2 = document.getElementById('chart2').getContext('2d');
+      const ch3 = document.getElementById('chart3').getContext('2d');
+      const ch4 = document.getElementById('chart4').getContext('2d');
+      const ch5 = document.getElementById('chart5').getContext('2d');
+      const chart1 = new Chart(ch1, {
+          type: 'pie',
+          data: {
+            labels : [{% for label in ratios %}"Оборотные активы за {{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Оборотные активы",
+                data : [{% for data in ratios %}{{ data.getDebtRatio }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(54, 162, 235)',
+                  'rgb(255, 205, 86)'
+                ],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart2 = new Chart(ch2, {
+          type: 'bar',
+          data: {
+            labels : [{% for label in ratios %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Разное",
+                data : [{% for data in ratios %}{{ data.getCurrentRatio }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart3 = new Chart(ch3, {
+          type: 'radar',
+          data: {
+            labels : [{% for label in ratios %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Общие активы",
+                data : [{% for data in ratios %}{{ data.getWorkingCapital }},{% endfor %}],
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart4 = new Chart(ch4, {
+          type: 'polarArea',
+          data: {
+            labels : [{% for label in ratios %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Основные средства",
+                data : [{% for data in ratios %}{{ data.getAssetsToEquaityRatio }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(75, 192, 192)',
+                  'rgb(255, 205, 86)',
+                  'rgb(201, 203, 207)',
+                  'rgb(54, 162, 235)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+      const chart5 = new Chart(ch5, {
+          type: 'bar',
+          data: {
+            labels : [{% for label in ratios %}"{{ label.year }}",{% endfor %}],
+              datasets: [{
+                label: "Основные средства",
+                data : [{% for data in ratios %}{{ data.getDebtToEquaityRatio }},{% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(75, 192, 192)',
+                  'rgb(255, 205, 86)',
+                  'rgb(201, 203, 207)',
+                  'rgb(54, 162, 235)'
+                ],
+                borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              }
+          }
+      });
+
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends '../base.html' %}
+
+{% block title %}Список компаний{% endblock %}
+
+
+{% block content %}
+    <div class="block">
+        <div class="uk-container">
+            <h1>Список компаний </h1>
+            <table class="uk-table uk-table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Наименование компании</th>
+                        <th colspan="3">Отчет</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for company in companies %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ company.companyName }}</td>
+                        <td><a href="{% url 'viewAssets' slug=company.slug %}" class="uk-button uk-button-primary">Активы</a></td>
+                        <td><a href="{% url 'viewEquity' slug=company.slug %}" class="uk-button uk-button-primary">Капиталы</a></td>
+                        <td><a href="{% url 'viewRatios' slug=company.slug %}" class="uk-button uk-button-primary">Коэффициенты</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
